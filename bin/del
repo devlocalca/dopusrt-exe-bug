@@ -1,0 +1,7 @@
+#!/bin/bash
+clear
+# delete a dopus file collection
+COLLECTION_NAME=$1
+
+${DOPUS_DIR}/dopusrt.exe /col delete ${COLLECTION_NAME}
+printf "\nsuccess: deleted file collection: [${COLLECTION_NAME}]\n"

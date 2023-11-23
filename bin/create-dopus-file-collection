@@ -1,0 +1,20 @@
+#!/bin/bash
+# it would be better to put kproc here
+# $proj/set-env must be run before calling this
+
+# - given a .txt file containing line items that are a path to a file (windows/dos path format)
+# - delete any file collection with the same name
+# - create a dopus file collection
+
+export DOPUS_FILE_COLLECTION_NAME=$1
+export IN_FILE=$2
+
+# convert to dos file format for input to dopusrt
+# sets bom
+# sets utf-8
+# reference:
+unix2dos ${IN_FILE}
+
+# --
+${DOPUS_DIR}/dopusrt.exe /col delete "${DOPUS_FILE_COLLECTION_NAME}"
+${DOPUS_DIR}/dopusrt.exe /col import /create /utf8 "${DOPUS_FILE_COLLECTION_NAME}" ${IN_FILE}

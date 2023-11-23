@@ -1,0 +1,4 @@
+/d/path/to/some/file.txt
+/d/path1/to/some/file-1.txt
+/d/path2/to/some/file-2.txt
+/d/path3/to/some/file-3.txt

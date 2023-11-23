@@ -1,0 +1,11 @@
+#!/bin/bash
+export HOME=/d/dev/devlocalca
+export REPOS=${HOME}/repos
+export THIS_REPO=$(basename `pwd`)
+export REPO=${REPOS}/${THIS_REPO}   # full path to this git repo
+
+printf "\nREPOS=[${REPOS}]"
+printf "\nTHIS_REPO=[${THIS_REPO}]"
+printf "\nREPO=[${REPO}]"
+
+source ${REPOS}/set-ssh-key

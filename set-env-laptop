@@ -1,0 +1,27 @@
+#!/bin/bash
+export HOME=/d/dev/devlocalca
+
+# set this to where the local git repo is located
+export PROJ=${HOME}/repos/dopusrt-script
+printf "\nPROJ=[${PROJ}]"
+
+# set this in your env, in .bash_profile or Windows personal account env vars or system env vars
+# search: environment variables
+export DOPUS_DIR=/d/apps/gpsoftware/directory-opus/12.33
+printf "\nDOPUS_DIR=[${DOPUS_DIR}]"
+
+printf "\n"
+
+# -- the following settings are not needed to run the `<keyword>/find-files` scripts
+# -- settings for github scripts (local: not in github)
+export REPOS=${HOME}/repos
+export THIS_REPO=$(basename `pwd`)
+export REPO=${REPOS}/${THIS_REPO}   # full path to this git repo
+
+printf "\nREPOS=[${REPOS}]"
+printf "\nTHIS_REPO=[${THIS_REPO}]"
+printf "\nREPO=[${REPO}]"
+
+source ${REPOS}/set-ssh-key   # set my SSH_KEY used by scripts for git push to github
+
+printf "\n\n---\n"

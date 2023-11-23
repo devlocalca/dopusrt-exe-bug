@@ -1,0 +1,8 @@
+#!/bin/bash
+./p2w ./test.txt
+
+# how to get script `p2w` to return the output-win.txt file name?
+# printf "\nOUT_FILE=[${OUT_FILE}]"
+
+# issue:  creates file:  'test-win.txt' that has weird line endings, this might be the problem.
+# unix2dos should fix the file, but it does not

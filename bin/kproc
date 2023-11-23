@@ -1,0 +1,5 @@
+#!/bin/bash
+PROC=$1
+
+taskkill /IM "${PROC}" /F &
+# tasklist /NH /FI "imagename eq $PROC" &

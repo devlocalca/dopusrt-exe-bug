@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# convert a file from posix path like:  /d/some/path/to/file.txt
+# to a Windows/DOS path like:  d:\some\path\to\file.txt
+# save to a new file name:  basename-win.txt
+IN_FILE=$1
+
+#---
+# break up file name + extension
+filename=$(basename -- ${IN_FILE})
+extension="${filename##*.}"
+basename="${filename%.*}"
+
+# test
+#printf "\nfilename: ${filename}"
+#printf "\nextension: ${extension}"
+#printf "\nbasename: ${basename}"
+#printf "\n"
+
+#---
+WIN_DOS_FILE_NAME="${basename}-dos.${extension}"
+rm -f ${WIN_DOS_FILE_NAME}
+
+# --- ------------------------------------------------------------------
+# --- convert each line and create output file to be used by 'dopusrt.exe'
+LINES=$(cat ${filename})
+
+for line in ${LINES}; do
+   #printf "\nProcessing: [${line}]"
+   cygpath -w ${line} | tee -a "${WIN_DOS_FILE_NAME}"
+done
+
+# --- ------------------------------------------------------------------
+# make sure that file is in Windows/DOS format
+# implicit -o <file>
+# implicit BOM
+# implicit utf-8
+unix2dos -q ./${WIN_DOS_FILE_NAME}
+
+# return value
+echo "${WIN_DOS_FILE_NAME}"

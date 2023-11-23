@@ -1,0 +1,82 @@
+#!/bin/bash
+clear
+# run this script inside this directory:
+# ./find-files
+
+# --
+# make sure settings in $proj/set-env-laptop are correct
+source set-env-laptop
+
+# required: kill all directory opus .exe processes
+# if any .exe related to dopus is running when this script is run,
+# the lister will not correctly display the expected results
+${PROJ}/bin/kproc dopusrt.exe
+${PROJ}/bin/kproc dopus.exe
+
+# --
+export FILE_COLLECTION_NAME=d-support-aws
+
+# ---
+# https://www.tecmint.com/find-and-sort-files-modification-date-and-time-in-linux
+
+# Three commands are run
+# 1. GNU find.exe
+# 2. dos2unix.exe on results file
+# 3. dopusrt.exe to create a file collection from the find command
+
+# ---
+# 1. find files using cygwin GNU find.exe command (output to: file-collection.txt)
+# 2. convert file-collection.txt to DOS file format: file-collection-dos.txt (dos2unix)
+# 3. run command: `dopusrt.exe` to create a file collection
+# 4. observe all commands work but file collection fails to create
+
+# --- ------------------------------------------------------------------
+SEARCH_DIR=/d
+FIND_RESULTS=d-file-collection.txt
+rm -f ${FIND_RESULTS}
+
+# --- ------------------------------------------------------------------
+# -- find.exe (GNU find)
+find "${SEARCH_DIR}" -type f \( \
+   -iname '*support*aws*.txt' \
+   -o -iname '*support*aws*.md' \
+   -o -iname '*support*aws*.png' \
+   -o -iname '*support*aws*.jpg' \
+   -o -iname '*support*aws*.pdf' \
+   -o -iname '*aws*support*.txt' \
+   -o -iname '*aws*support*.md' \
+   -o -iname '*aws*support*.png' \
+   -o -iname '*aws*support*.jpg' \
+   -o -iname '*aws*support*.pdf' \
+   \) -print0 | xargs -0 stat --format '%W :%w %n' | sort -nr | cut -d " " -f 5 | tee ${FIND_RESULTS}
+
+# --- ------------------------------------------------------------------
+# ---
+# 2) convert to windows path
+#IN_DOPUS_FILE=$(${PROJ}/bin/p2w "${FIND_RESULTS}")  # getting return value does not work, why?
+IN_DOPUS_FILE=d-file-collection-dos.txt
+rm -f ${IN_DOPUS_FILE}
+${PROJ}/bin/p2w "${FIND_RESULTS}"
+
+# --- ------------------------------------------------------------------
+# ---
+# 3) create dopus file collection
+if [ -f ${IN_DOPUS_FILE} ]
+then
+   ${DOPUS_DIR}/dopusrt.exe /col delete "${FILE_COLLECTION_NAME}"
+   printf "\nsuccess: deleted file collection [${FILE_COLLECTION_NAME}]\n"
+
+   FILE_COLLECTION_NUM_ENTRIES=`wc -l ${IN_DOPUS_FILE}`
+   printf "\nFound: ${FILE_COLLECTION_NUM_ENTRIES} entries\n"
+   # read -p "Press [ENTER] to create file collection ${FILE_COLLECTION_NAME} from file ${IN_DOPUS_FILE}"
+   ${PROJ}/bin/create-dopus-file-collection "${FILE_COLLECTION_NAME}" ${IN_DOPUS_FILE}
+else
+   printf "\nIN_DOPUS_FILE: [${IN_DOPUS_FILE}] does not exist\n"
+fi
+
+# ---
+# required: kill all directory opus .exe processes
+# if any .exe related to dopus is running when this script is run,
+# the lister will not correctly display the expected results
+${PROJ}/bin/kproc dopusrt.exe
+${PROJ}/bin/kproc dopus.exe

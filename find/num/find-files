@@ -1,0 +1,62 @@
+#!/bin/bash
+clear
+
+# run this script inside this directory:
+# ./find-files
+
+# --
+# make sure settings in $proj/set-env are correct
+source ../../set-env
+export FILE_COLLECTION_NAME=num-files
+
+# ---
+# https://www.tecmint.com/find-and-sort-files-modification-date-and-time-in-linux
+
+# Three commands are run
+# 1. find.exe
+# 2. dos2unix.exe
+# 3. dopusrt.exe
+
+# ---
+# 1. find files using cygwin GNU find.exe command (output to: file-collection.txt)
+# 2. convert file-collection.txt to DOS file format: file-collection-dos.txt (dos2unix)
+# 3. run command: `dopusrt.exe` to create a file collection
+# 4. observe all commands work but file collection fails to create
+
+# --- ------------------------------------------------------------------
+SEARCH_DIR=/d/notes
+FIND_RESULTS=./file-collection.txt
+rm -f ${FIND_RESULTS}
+
+# --- ------------------------------------------------------------------
+# 1) Step #1 | find.exe (GNU find)
+# description: find all files that begin with a number but has no dashes in the file name
+find "${SEARCH_DIR}" -type f \( \
+   -iname '[[:digit:]]*.txt' \
+   -o -iname '[[:digit:]]*.md' \
+   -o -iname '[[:digit:]]*.png' \
+   -o -iname '[[:digit:]]*.jpg' \
+   -o -iname '[[:digit:]]*.pdf' \
+   \) -print0 | xargs -0 stat --format '%W :%w %n' | sort -nr | cut -d " " -f 5 | \
+   grep -v '-' | tee ${FIND_RESULTS}
+
+# --- ------------------------------------------------------------------
+# ---
+# 2) Step #2 | convert to windows path
+#IN_DOPUS_FILE=$(${PROJ}/bin/p2w "${FIND_RESULTS}")  # getting return value does not work, why?
+IN_DOPUS_FILE=./file-collection-dos.txt
+rm -f ${IN_DOPUS_FILE}
+${PROJ}/bin/p2w "${FIND_RESULTS}"
+
+# --- ------------------------------------------------------------------
+# ---
+# 3) Step #3 | create dopus file collection
+if [ -f ${IN_DOPUS_FILE} ]
+then
+   ${DOPUS_DIR}/dopusrt.exe /col delete "${FILE_COLLECTION_NAME}"
+   wc -l ${IN_DOPUS_FILE}
+   # read -p "Press [ENTER] to create file collection ${FILE_COLLECTION_NAME} from file ${IN_DOPUS_FILE}"
+   ${PROJ}/bin/create-dopus-file-collection "${FILE_COLLECTION_NAME}" ${IN_DOPUS_FILE}
+else
+   printf "${IN_DOPUS_FILE} does not exist"
+fi
