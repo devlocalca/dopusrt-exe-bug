@@ -11,11 +11,12 @@ source ../../set-env-laptop
 # required: kill all directory opus .exe processes
 # if any .exe related to dopus is running when this script is run,
 # the lister will not correctly display the expected results
-${PROJ}/bin/kproc dopusrt.exe
-${PROJ}/bin/kproc dopus.exe
+${PROJ}/bin/kproc dopusrt.exe > /dev/null
+${PROJ}/bin/kproc dopus.exe > /dev/null
 
 # --
 export FILE_COLLECTION_NAME=d-support-aws
+printf "\nFILE_COLLECTION_NAME=[${FILE_COLLECTION_NAME}]"
 
 # ---
 # https://www.tecmint.com/find-and-sort-files-modification-date-and-time-in-linux
@@ -49,7 +50,8 @@ find "${SEARCH_DIR}" -type f \( \
    -o -iname '*aws*support*.png' \
    -o -iname '*aws*support*.jpg' \
    -o -iname '*aws*support*.pdf' \
-   \) -print0 | xargs -0 stat --format '%W :%w %n' | sort -nr | cut -d " " -f 5 | tee ${FIND_RESULTS}
+   \) -print0 | xargs -0 stat --format '%W :%w %n' | sort -nr | cut -d " " -f 5 \
+   | sort | uniq | grep -v logged | grep -v profiles | tee ${FIND_RESULTS}
 
 # --- ------------------------------------------------------------------
 # ---

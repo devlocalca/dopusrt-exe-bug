@@ -1,5 +1,7 @@
 #!/bin/bash
 clear
+
+# --
 # run this script inside this directory:
 # $./find-d-notes
 
@@ -10,11 +12,12 @@ source ../../set-env-laptop
 # required: kill all directory opus .exe processes
 # if any .exe related to dopus is running when this script is run,
 # the lister will not correctly display the expected results
-${PROJ}/bin/kproc dopusrt.exe
-${PROJ}/bin/kproc dopus.exe
+${PROJ}/bin/kproc dopusrt.exe > /dev/null
+${PROJ}/bin/kproc dopus.exe > /dev/null
 
 # ---
 export FILE_COLLECTION_NAME=d-jira
+printf "\nFILE_COLLECTION_NAME=[${FILE_COLLECTION_NAME}]"
 
 # ---
 # https://www.tecmint.com/find-and-sort-files-modification-date-and-time-in-linux
@@ -43,7 +46,8 @@ find "${SEARCH_DIR}" -type f \( \
    -o -iname '*jira*.png' \
    -o -iname '*jira*.jpg' \
    -o -iname '*jira*.pdf' \
-   \) -print0 | xargs -0 stat --format '%W :%w %n' | sort -nr | cut -d " " -f 5 | tee ${FIND_RESULTS}
+   \) -print0 | xargs -0 stat --format '%W :%w %n' | sort -nr | cut -d " " -f 5 | \
+   grep -v profiles | tee ${FIND_RESULTS}
 
 # --- ------------------------------------------------------------------
 # ---
@@ -64,6 +68,7 @@ then
 
    FILE_COLLECTION_NUM_ENTRIES=`wc -l ${IN_DOPUS_FILE}`
    printf "\nFound: ${FILE_COLLECTION_NUM_ENTRIES} entries\n"
+
    # read -p "Press [ENTER] to create file collection ${FILE_COLLECTION_NAME} from file ${IN_DOPUS_FILE}"
    ${PROJ}/bin/create-dopus-file-collection "${FILE_COLLECTION_NAME}" ${IN_DOPUS_FILE}
 else
@@ -74,5 +79,6 @@ fi
 # required: kill all directory opus .exe processes
 # if any .exe related to dopus is running when this script is run,
 # the lister will not correctly display the expected results
-${PROJ}/bin/kproc dopusrt.exe
-${PROJ}/bin/kproc dopus.exe
+#sleep 120
+#${PROJ}/bin/kproc dopusrt.exe
+#${PROJ}/bin/kproc dopus.exe

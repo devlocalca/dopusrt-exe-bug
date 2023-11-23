@@ -12,8 +12,8 @@ source ../../set-env-laptop
 # required: kill all directory opus .exe processes
 # if any .exe related to dopus is running when this script is run,
 # the lister will not correctly display the expected results
-${PROJ}/bin/kproc dopusrt.exe >> /dev/null
-${PROJ}/bin/kproc dopus.exe >> /dev/null
+${PROJ}/bin/kproc dopusrt.exe > /dev/null
+${PROJ}/bin/kproc dopus.exe > /dev/null
 
 # ---
 export FILE_COLLECTION_NAME=d-api
@@ -49,13 +49,14 @@ find "${SEARCH_DIR}" -type f \( \
    -o -iname '*api*.png' \
    -o -iname '*api*.jpg' \
    -o -iname '*api*.pdf' \
-   \) -print0 | xargs -0 stat --format '%W :%w %n' | sort -nr | cut -d " " -f 5 | \
-   grep -v profiles | tee ${FIND_RESULTS}
+   \) -print0 | xargs -0 stat --format '%W :%w %n' | sort -nr | cut -d " " -f 5 \
+   | sort | uniq | grep -v logged | grep -v profiles | tee ${FIND_RESULTS}
 
 # --- ------------------------------------------------------------------
 # ---
 # 2) convert the ouput from the GNU find command to windows path (creating another file)
 # this will be the input file to dopus
+printf "\n\n--- converting file to dos style path ---\n\n"
 #IN_DOPUS_FILE=$(${PROJ}/bin/p2w "${FIND_RESULTS}")  # getting return value does not work, why?
 IN_DOPUS_FILE=d-file-collection-dos.txt
 rm -f ${IN_DOPUS_FILE}
