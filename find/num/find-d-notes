@@ -2,12 +2,20 @@
 clear
 
 # run this script inside this directory:
-# ./find-files
+# ./find-d-notes
 
 # --
 # make sure settings in $proj/set-env are correct
-source ../../set-env
-export FILE_COLLECTION_NAME=num-files
+source ../../set-env-laptop
+
+# required: kill all directory opus .exe processes
+# if any .exe related to dopus is running when this script is run,
+# the lister will not correctly display the expected results
+${PROJ}/bin/kproc dopusrt.exe
+${PROJ}/bin/kproc dopus.exe
+
+# --
+export FILE_COLLECTION_NAME=d-num-files
 
 # ---
 # https://www.tecmint.com/find-and-sort-files-modification-date-and-time-in-linux
@@ -25,7 +33,7 @@ export FILE_COLLECTION_NAME=num-files
 
 # --- ------------------------------------------------------------------
 SEARCH_DIR=/d/notes
-FIND_RESULTS=./file-collection.txt
+FIND_RESULTS=./d-file-collection.txt
 rm -f ${FIND_RESULTS}
 
 # --- ------------------------------------------------------------------
@@ -44,7 +52,7 @@ find "${SEARCH_DIR}" -type f \( \
 # ---
 # 2) Step #2 | convert to windows path
 #IN_DOPUS_FILE=$(${PROJ}/bin/p2w "${FIND_RESULTS}")  # getting return value does not work, why?
-IN_DOPUS_FILE=./file-collection-dos.txt
+IN_DOPUS_FILE=./d-file-collection-dos.txt
 rm -f ${IN_DOPUS_FILE}
 ${PROJ}/bin/p2w "${FIND_RESULTS}"
 
@@ -54,9 +62,21 @@ ${PROJ}/bin/p2w "${FIND_RESULTS}"
 if [ -f ${IN_DOPUS_FILE} ]
 then
    ${DOPUS_DIR}/dopusrt.exe /col delete "${FILE_COLLECTION_NAME}"
-   wc -l ${IN_DOPUS_FILE}
+   printf "\nsuccess: deleted file collection [${FILE_COLLECTION_NAME}]\n"
+
+   FILE_COLLECTION_NUM_ENTRIES=`wc -l ${IN_DOPUS_FILE}`
+   printf "\nFound: ${FILE_COLLECTION_NUM_ENTRIES} entries\n"
+
    # read -p "Press [ENTER] to create file collection ${FILE_COLLECTION_NAME} from file ${IN_DOPUS_FILE}"
    ${PROJ}/bin/create-dopus-file-collection "${FILE_COLLECTION_NAME}" ${IN_DOPUS_FILE}
 else
    printf "${IN_DOPUS_FILE} does not exist"
 fi
+
+
+# ---
+# required: kill all directory opus .exe processes
+# if any .exe related to dopus is running when this script is run,
+# the lister will not correctly display the expected results
+${PROJ}/bin/kproc dopusrt.exe
+${PROJ}/bin/kproc dopus.exe

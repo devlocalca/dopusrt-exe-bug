@@ -1,7 +1,7 @@
 #!/bin/bash
 clear
 # run this script inside this directory:
-# $./find-d
+# $./find-d-notes
 
 # --
 # make sure settings in $proj/set-env-laptop are correct

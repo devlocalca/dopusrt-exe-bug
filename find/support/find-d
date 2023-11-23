@@ -1,7 +1,7 @@
 #!/bin/bash
 clear
 # run this script inside this directory:
-# $./find-d
+# $./find-d-notes
 
 # --
 # make sure settings in $proj/set-env-laptop are correct
@@ -71,6 +71,8 @@ else
 fi
 
 # --
-# kill all dopus .exe processes for the next run (required due to some issue or bug)
+# required: kill all directory opus .exe processes
+# if any .exe related to dopus is running when this script is run,
+# the lister will not correctly display the expected results
 ${PROJ}/bin/kproc dopusrt.exe
 ${PROJ}/bin/kproc dopus.exe

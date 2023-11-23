@@ -12,7 +12,7 @@ printf "\nDOPUS_DIR=[${DOPUS_DIR}]"
 
 printf "\n"
 
-# -- the following settings are not needed to run the `<keyword>/find-files` scripts
+# -- the following settings are not needed to run the `<keyword>/find-d-notes` scripts
 # -- settings for github scripts (local: not in github)
 export REPOS=${HOME}/repos
 export THIS_REPO=$(basename `pwd`)
