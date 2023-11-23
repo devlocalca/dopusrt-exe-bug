@@ -1,7 +1,9 @@
 #!/bin/bash
 clear
+
+# --
 # run this script inside this directory:
-# $./find-d-notes
+# $./find-d
 
 # --
 # make sure settings in $proj/set-env-laptop are correct
@@ -10,11 +12,12 @@ source ../../set-env-laptop
 # required: kill all directory opus .exe processes
 # if any .exe related to dopus is running when this script is run,
 # the lister will not correctly display the expected results
-${PROJ}/bin/kproc dopusrt.exe
-${PROJ}/bin/kproc dopus.exe
+${PROJ}/bin/kproc dopusrt.exe >> /dev/null
+${PROJ}/bin/kproc dopus.exe >> /dev/null
 
 # ---
 export FILE_COLLECTION_NAME=d-api
+printf "\nFILE_COLLECTION_NAME=[${FILE_COLLECTION_NAME}]"
 
 # ---
 # https://www.tecmint.com/find-and-sort-files-modification-date-and-time-in-linux
@@ -37,13 +40,17 @@ rm -f ${FIND_RESULTS}
 
 # --- ------------------------------------------------------------------
 # -- find.exe (GNU find)
+# -- exclude directories:
+# - /x/profiles/
+
 find "${SEARCH_DIR}" -type f \( \
    -iname '*api*.txt' \
    -o -iname '*api*.md' \
    -o -iname '*api*.png' \
    -o -iname '*api*.jpg' \
    -o -iname '*api*.pdf' \
-   \) -print0 | xargs -0 stat --format '%W :%w %n' | sort -nr | cut -d " " -f 5 | tee ${FIND_RESULTS}
+   \) -print0 | xargs -0 stat --format '%W :%w %n' | sort -nr | cut -d " " -f 5 | \
+   grep -v profiles | tee ${FIND_RESULTS}
 
 # --- ------------------------------------------------------------------
 # ---
@@ -64,6 +71,7 @@ then
 
    FILE_COLLECTION_NUM_ENTRIES=`wc -l ${IN_DOPUS_FILE}`
    printf "\nFound: ${FILE_COLLECTION_NUM_ENTRIES} entries\n"
+
    # read -p "Press [ENTER] to create file collection ${FILE_COLLECTION_NAME} from file ${IN_DOPUS_FILE}"
    ${PROJ}/bin/create-dopus-file-collection "${FILE_COLLECTION_NAME}" ${IN_DOPUS_FILE}
 else
@@ -72,5 +80,6 @@ fi
 
 # --
 # kill all dopus .exe processes for the next run (required due to some issue or bug)
-${PROJ}/bin/kproc dopusrt.exe
-${PROJ}/bin/kproc dopus.exe
+#sleep 60
+#${PROJ}/bin/kproc dopusrt.exe
+#${PROJ}/bin/kproc dopus.exe

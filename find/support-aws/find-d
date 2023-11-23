@@ -1,11 +1,12 @@
 #!/bin/bash
 clear
+
 # run this script inside this directory:
-# ./find-d-notes
+# ./find-d
 
 # --
 # make sure settings in $proj/set-env-laptop are correct
-source set-env-laptop
+source ../../set-env-laptop
 
 # required: kill all directory opus .exe processes
 # if any .exe related to dopus is running when this script is run,
@@ -68,6 +69,7 @@ then
 
    FILE_COLLECTION_NUM_ENTRIES=`wc -l ${IN_DOPUS_FILE}`
    printf "\nFound: ${FILE_COLLECTION_NUM_ENTRIES} entries\n"
+
    # read -p "Press [ENTER] to create file collection ${FILE_COLLECTION_NAME} from file ${IN_DOPUS_FILE}"
    ${PROJ}/bin/create-dopus-file-collection "${FILE_COLLECTION_NAME}" ${IN_DOPUS_FILE}
 else
@@ -78,5 +80,6 @@ fi
 # required: kill all directory opus .exe processes
 # if any .exe related to dopus is running when this script is run,
 # the lister will not correctly display the expected results
-${PROJ}/bin/kproc dopusrt.exe
-${PROJ}/bin/kproc dopus.exe
+#sleep 60   # lister (dopus.exe) needs time to process and create file collection
+#${PROJ}/bin/kproc dopusrt.exe
+#${PROJ}/bin/kproc dopus.exe

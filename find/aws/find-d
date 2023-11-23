@@ -71,6 +71,9 @@ else
 fi
 
 # --
-# kill all dopus .exe processes for the next run (required due to some issue or bug)
-${PROJ}/bin/kproc dopusrt.exe
-${PROJ}/bin/kproc dopus.exe
+#sleep 60
+# required: kill all directory opus .exe processes
+# if any .exe related to dopus is running when this script is run,
+# the lister will not correctly display the expected results
+#${PROJ}/bin/kproc dopusrt.exe
+#${PROJ}/bin/kproc dopus.exe

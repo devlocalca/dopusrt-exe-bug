@@ -2,10 +2,10 @@
 clear
 
 # run this script inside this directory:
-# $./find-d
+# ./find-d
 
 # --
-# make sure settings in $proj/set-env-laptop are correct
+# make sure settings in $proj/set-env are correct
 source ../../set-env-laptop
 
 # required: kill all directory opus .exe processes
@@ -14,16 +14,16 @@ source ../../set-env-laptop
 ${PROJ}/bin/kproc dopusrt.exe
 ${PROJ}/bin/kproc dopus.exe
 
-# ---
-export FILE_COLLECTION_NAME=d-support
+# --
+export FILE_COLLECTION_NAME=d-num
 
 # ---
 # https://www.tecmint.com/find-and-sort-files-modification-date-and-time-in-linux
 
 # Three commands are run
-# 1. GNU find.exe
-# 2. dos2unix.exe on results file
-# 3. dopusrt.exe to create a file collection from the find command
+# 1. find.exe
+# 2. dos2unix.exe
+# 3. dopusrt.exe
 
 # ---
 # 1. find files using cygwin GNU find.exe command (output to: file-collection.txt)
@@ -33,31 +33,32 @@ export FILE_COLLECTION_NAME=d-support
 
 # --- ------------------------------------------------------------------
 SEARCH_DIR=/d
-FIND_RESULTS=d-file-collection.txt
+FIND_RESULTS=./d-file-collection.txt
 rm -f ${FIND_RESULTS}
 
 # --- ------------------------------------------------------------------
-# -- find.exe (GNU find)
+# 1) Step #1 | find.exe (GNU find)
+# description: find all files that begin with a number but has no dashes in the file name
 find "${SEARCH_DIR}" -type f \( \
-   -iname '*support*.txt' \
-   -o -iname '*support*.md' \
-   -o -iname '*support*.png' \
-   -o -iname '*support*.jpg' \
-   -o -iname '*support*.pdf' \
-   \) -print0 | xargs -0 stat --format '%W :%w %n' | sort -nr | cut -d " " -f 5 | tee ${FIND_RESULTS}
+   -iname '[[:digit:]]*.txt' \
+   -o -iname '[[:digit:]]*.md' \
+   -o -iname '[[:digit:]]*.png' \
+   -o -iname '[[:digit:]]*.jpg' \
+   -o -iname '[[:digit:]]*.pdf' \
+   \) -print0 | xargs -0 stat --format '%W :%w %n' | sort -nr | cut -d " " -f 5 | \
+   grep -v '-' | grep -v profiles | grep -v site | tee ${FIND_RESULTS}
 
 # --- ------------------------------------------------------------------
 # ---
-# 2) convert the ouput from the GNU find command to windows path (creating another file)
-# this will be the input file to dopus
+# 2) Step #2 | convert to windows path
 #IN_DOPUS_FILE=$(${PROJ}/bin/p2w "${FIND_RESULTS}")  # getting return value does not work, why?
-IN_DOPUS_FILE=d-file-collection-dos.txt
+IN_DOPUS_FILE=./d-file-collection-dos.txt
 rm -f ${IN_DOPUS_FILE}
 ${PROJ}/bin/p2w "${FIND_RESULTS}"
 
 # --- ------------------------------------------------------------------
 # ---
-# 3) create dopus file collection
+# 3) Step #3 | create dopus file collection
 if [ -f ${IN_DOPUS_FILE} ]
 then
    ${DOPUS_DIR}/dopusrt.exe /col delete "${FILE_COLLECTION_NAME}"
@@ -69,13 +70,13 @@ then
    # read -p "Press [ENTER] to create file collection ${FILE_COLLECTION_NAME} from file ${IN_DOPUS_FILE}"
    ${PROJ}/bin/create-dopus-file-collection "${FILE_COLLECTION_NAME}" ${IN_DOPUS_FILE}
 else
-   printf "\nIN_DOPUS_FILE: [${IN_DOPUS_FILE}] does not exist\n"
+   printf "${IN_DOPUS_FILE} does not exist"
 fi
 
-# --
+
+# ---
 # required: kill all directory opus .exe processes
 # if any .exe related to dopus is running when this script is run,
 # the lister will not correctly display the expected results
-# sleep 120
-#${PROJ}/bin/kproc dopusrt.exe
-#${PROJ}/bin/kproc dopus.exe
+${PROJ}/bin/kproc dopusrt.exe
+${PROJ}/bin/kproc dopus.exe
